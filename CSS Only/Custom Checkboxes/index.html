@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Custom Checkboxes and Radio buttons</title>
+  <meta name="description" content="simple description of how custom checkboxes work">
+  <meta name="author" content="stanleyelliottg@gmail.com">
+<style>
+#main {
+	margin:auto;
+	max-width:22cm;
+	min-height:10cm;
+	background:white;
+}
+h1 {
+	width:100%;
+	border-bottom: 2px solid black;
+
+}
+
+.custom-checkbox {
+	width:30px;
+	height:30px;
+	border:1px solid black;
+	display:inline-block;
+}
+
+#example-c:checked ~ .combinator {
+	box-sizing:border-box;
+	background-color:darkgreen;
+	color:white;
+}
+
+#example-d:checked ~ label span {
+	background-color:lightblue;
+
+}
+
+.checkmark {
+	width:100%;
+	height:100%;
+	padding:5px;
+	opacity: 0;
+	box-sizing:border-box;
+}
+
+#example-e:checked ~ label span .checkmark {
+	opacity: 1;
+
+}
+
+#example-f {
+	position:absolute;
+	left:-1000px;
+}
+
+#example-f:checked ~ label span .checkmark {
+	opacity: 1;
+
+}
+</style>
+</head>
+<body>
+	<div id="main">
+		<h1> Custom Checkboxes in CSS</h2>
+
+	A normal native checkbox looks like 
+	<input type="checkbox">
+
+	<p>
+	You can't just style it as is because browsers limit how native form elements can be styled and their behaviour differs slightly from browser to browser. 
+	The solution is to create a non-native checkbox that works like the real thing. Making a custom checkbox with javascript is possible but problematic due to accesibility issues with things like screen readers.
+	Fortunately there is a way to accomplish it using css such that it works properly and you don't need to maintain a separate site for people with special needs.
+	<p>
+	The trick depends on exploiting the 
+	&lt;label&gt; tag
+	<p>
+	The &lt;label&gt; tag is meant to allow you to provide labels for your form elements that browsers can understand semantically. I.E allowing things like text-to-speech web browsers to automatically know what label goes with what checkbox. 
+	it looks like 
+	<p>
+
+	  <input type="checkbox"  id="example-a" >
+	<label for="example-a">This is a label</label>
+  <p>
+  Notice that clicking on the label will check or uncheck the checkbox. This makes it easier for people to use forms if they have motor control issues and difficulty clicking on a small target like a native checkbox but it also helps create a custom checkbox. The custom checkbox css trick is to style up a checkbox in the label and then use css to hide the native checkbox. I'll go through the process step by step.
+
+  <p>
+  First a simple css box. In this case just a span within the label styled to appear as a box. Note that Div elements are not allowed within a label by the HTML spec. You can however use a span and style it with display:block;
+  <div>
+	  <input type="checkbox" id="example-b">
+	  <label for="example-b">
+		  <span class="custom-checkbox"></span>
+		  This is another label
+	  </label>
+	  <p>
+  </div>
+  <p> 
+  To get it to actually change depending on how the use of css combinators and pseudo-element selectors.
+  The :checked pseudoelement selector allows you to make a style rule that applies on checkboxes that are checked.
+  The ~ selector makes a style rule apply to the siblings of element that are after instead of the element itself. You could also use the + combinator which only applies the style rule to the sibling immediately following
+
+  Combining a sibling combinator and the :checked selector allows for a checkbox to restyle adjacent elements when checked like so 
+  <div>
+	  <div class="combinator"> this is a an element before the checkbox</div>
+	  <input type="checkbox" id="example-c">
+	  <label class="combinator" for="example-c">this is a label after the checkbox </label>
+	  <p>
+  </div>
+  <p> for a checkbox
+  <div>
+	  <input type="checkbox" id="example-d">
+	  <label class="combinator" for="example-d">
+		  <span class="custom-checkbox"></span>
+		  Label text
+	</label>
+
+  </div>
+  Now you can change the appearance of the CSS depending on whether it is checked you just need a checkmark image that is only visible when the checkbox is checked like so
+
+  <div>
+	  <input type="checkbox" id="example-e">
+	  <label class="combinator" for="example-e">
+		  <span class="custom-checkbox"><img src="green_checkmark.png" class="checkmark"></span>
+		  label text
+	  </label>
+
+</div>
+<div> Now we need to hide the original native checkbox such that regular users won't notice it but screen readers and non-visual browsers will still be able to find it.
+      Both Display:none and visibility:hidden prevent it from being read by screen readers.
+      One method that does work is using absolute positioning to move it offscreen.
+
+	<div>
+		<input type="checkbox" id="example-f">
+		<label class="combinator" for="example-f">
+			  <span class="custom-checkbox"><img src="green_checkmark.png" class="checkmark"></span>
+			  label text
+		</label>
+      </div>
+      <br>
+<div> The checkbox image used is a public domain image from <a href="https://www.kenney.nl/assets/ui-pack"> Kenny's UI Pack</a> </div>
+</body>
+</html>
