@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+<style>
+.here {
+	border:1px solid blue;
+}
+
+body > div {
+	border: 1px solid black;
+	padding:10px;
+	max-width:22cm;
+	margin:20px auto;
+}
+</style>
+</head>
+<body>
+<div id="hello-world"></div>
+<div id="inside-tag"></div>
+<div id="properties"></div>
+<div id="shorthand"></div>
+<div id="nested"></div>
+<div id="component"></div>
+<div id="redrawing"></div>
+<div id="routing"></div>
+<div id="xhr"></div>
+    <script src="https://unpkg.com/mithril/mithril.js">
+    </script>
+    <script>
+	    var getDOME = function(x) { return document.getElementById(x)};
+	    //getDOME = document.getElementById doesn't work because of self
+
+
+	    m.render(getDOME("hello-world"),"Hello World");
+	    // m.render(targetDomElement, content to display)
+	    // the targetDomElement would normally document.body
+	    // In this case I'm using specific elements so I can
+	    // put multiple examples in a single page
+
+
+
+	    m.render(getDOME("inside-tag"), m("h1", "Content inside a h1 tag"));
+	    // m(...) is a function for constructing things to render
+	    // m("tag", "content inside tag") 
+
+	    m.render(getDOME("properties"),m("h1", {class: "here"}, "tag with class of here"))
+	    // also m(tag, {element properties}, "content"
+
+	    m.render(getDOME("shorthand"),m(".here"))
+	    // The first argument of m can be any css selector that can describe a specific html elmeent
+	    // any valid combination of # (id) . (class) and [] attribute syntax.
+	    // eg m("div#thing") m("span.highlight") m(a[href="https://example.com")
+	    // The appropriate properties will be set on the generated element
+	    // If no element is specified e.g like m(#this) then it defaults to div
+	    // Recommended to specify the values that are expected to change through the object argument
+	    // and specify attributes and css properties that are not expected to change through the 
+	    // first argument.
+
+	    m.render(getDOME("nested"),m("div", [
+		    m("h1", {class: "title"}, "My first app"),
+		    m("button", "A button"),
+		]));
+	    // content can also be an array of m-elements
+	    // in which case they are also rendered 
+	    // nested within the tag
+
+	    // Mithril Components
+	    // ==================
+
+		helloComponent = {
+				view: function() { 
+						return m("div", "Hello. This is a rendered component")
+				}
+		}
+	    // A basic component just needs a view function.
+
+		m.mount(getDOME("component"),helloComponent)
+		// Components are rendered using m.mount
+		// m.mount(targetDomElement, component)
+
+		// The difference between using mount and render is that 
+		// rendered components automatically get rerendered
+		// when the variables it depends on are changed to different
+		// values. I assume it uses javascript metaprogramming 
+
+		// Example
+
+		var count = 0 // added a variable
+		var redrawComponent = {
+		    view: function() {
+			return m("div", [
+			    m("h1", {class: "title"}, "My first app"),
+			    m("button", {onclick: function() {count++}}, count + " clicks"),
+			    m("button", {onclick: function() {count = 0}},  "reset " + count +" clicks"),
+			]) } };
+
+		m.mount(getDOME("redrawing"), redrawComponent);
+
+	  // Routing
+        	var splash = {
+    			view: function() {
+				return m("a", {href: "#!/hello"}, "Enter!")
+				    }}
+		var routeContent =  {
+			view: function() {
+				return m("p","Hello. This is a component accessible through a particular hashbang url")
+			}
+
+		}
+		m.route(getDOME("routing"), "/splash", {
+		    "/splash": splash,
+		    "/hello": routeContent,
+		})
+	        // m.route(targetDomElement, defaultRoute, {routeComponents}
+	        // works similarly to m.mount (including redrawing) but
+	        // allows you to switch which component gets displayed depending on 
+	        // the hashbang url. 
+	        // if the hashbang url doesn't match any then the default route component is displayed
+	        // only one m.route call can exist per application
+
+	   // XHR Request
+
+	var xhrCount = 0
+	var xhrIncrement = function() {
+		m.request({
+			method: "PUT",
+			url: "//rem-rest-api.herokuapp.com/api/tutorial/1",
+			body: {count: xhrCount + 1},
+			withCredentials: true,
+		}).then(function(data) {
+			xhrCount = parseInt(data.count)
+		})
+	};
+        // m.request is a loose wrapper over XMLHttpRequest
+        // m.request({options})
+ 	// m.request 
+	xhrReset = function() {
+		m.request({
+			method: "PUT",
+			url: "//rem-rest-api.herokuapp.com/api/tutorial/1",
+			body: {count: 0},
+			withCredentials: true,
+		}).then(function(data) {
+			xhrRount = parseInt(data.count)
+		})
+	};
+	var xhrComponent = {
+		view: function() {
+			return m("div", [
+			    m("h1", {class: "title"}, "Clicker with XHR Request"),
+			    m("button", {onclick: xhrIncrement}, xhrCount + " clicks" ),
+			    m("button", {onclick: xhrReset} ,  "reset " + xhrCount +" clicks"),
+			]) 
+		} 
+	};
+	m.mount(getDOME("xhr"),xhrComponent)
+	// In a serious application you would stay DRY by using a template request that 
+	// the xhrReset and xhrIncrement would copy or inherit from. That isn't
+	// done in this case to make it easier to read the arguments that m.request
+	// receives
+    </script>
+</body>
+</html>
