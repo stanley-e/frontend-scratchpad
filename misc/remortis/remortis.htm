@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="a very simple project inspired by the myster of mortis.com described in https://www.youtube.com/watch?v=1ci3l7pnfdk">
+  <meta name="author" content="Stanley Elliott">
+<!-- Image used is one I produced by altering a free to use image from pexels, specifically https://www.pexels.com/photo/close-up-photo-of-dog-3658120/ -->
+<style>
+body {	
+	background-color:rgb(0,0,0);
+	color:hsl(0,100%,40%);
+	font-family: sans-serif;
+}
+img {
+	width:300px;
+	max-width:100%;
+}
+
+.outer-container {
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	height: 100vh;
+
+}
+.inner-container {
+
+}
+
+form {
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+}
+
+.field-box {
+margin-bottom:10px;
+padding:5px;
+
+
+}
+
+.field-title {
+padding:4px 9px;;
+
+}
+
+#login {
+text-align:center;
+background-color:rgb(0,0,0);
+background-color:transparent;
+color:rgb(255,0,0);
+text-transform: uppercase;
+font-size:1.1em;
+border: none;
+
+
+}
+
+input[type=text], input[type=password] {
+	margin:5px 10px;
+	padding:0px 5px;
+	display:block;
+	border: none;
+	border-bottom: 1px solid hsl(23,100%,12%);
+	background-color:hsl(262,0%,10%);
+	background-color:transparent;
+	color:hsl(23,1%,70%);
+}
+</style>
+</head>
+<body>
+<div class="outer-container">
+	<div class="inner-container">
+		<img src="thehound.png" alt="Scary dog picture" ></img>
+		<div>
+		<form action="">
+			<div class="field-box">
+				<label class="field-title" for="username-input" >Username</label>
+				<input id="username-input" class="field" type="text" placeholder="root" required>
+			</div>
+			<div class="field-box">
+				<label class="field-title" for="password-input" >Password</label>
+				<input id="password-input" class="field" type="password" placeholder="1234" required> 
+			</div>
+			<button id="login" type="submit"> login </button>
+		</form>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
