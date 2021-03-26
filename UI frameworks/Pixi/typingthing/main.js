@@ -16,19 +16,39 @@ baseTextStyleOptions = {
 	fontSize: 40 
 
 }
-greenTextStyleOptions = Object.create(baseTextStyleOptions)
-greenTextStyleOptions.fill = "#00EE00"
+class TypeWord extends PIXI.Container {
 
-redTextStyleOptions = Object.create(baseTextStyleOptions)
-redTextStyleOptions.fill = "#FF0000"
+	constructor(word,baseTextOptions) {
+		super()
+		var generateStyledTextSprite = function(content,customColor) {
+			var styleTextOptions = Object.create(baseTextOptions)
+			styleTextOptions.fill = customColor
+			var textStyle = new PIXI.TextStyle(styleTextOptions)
+			var textSprite = new PIXI.Text(content, textStyle)
+			return textSprite
+		}
+		this.regularTextSprite = generateStyledTextSprite(word, "#FF0FF0")
+		this.overlayTextSprite = generateStyledTextSprite("", "#FF0000")
+		this.addChild(this.regularTextSprite)
+		this.addChild(this.overlayTextSprite)
+		this.currentTextLength = word.length
+		this.currentOverlayLength = 0
+	}
 
-greenTextStyle = new PIXI.TextStyle(greenTextStyleOptions)
-redTextStyle = new PIXI.TextStyle(redTextStyleOptions) 
+	getNextLetter() {
+		if (this.currentTextLength == this.currentOverlayLength) {
+			return ""
+		}
+		return this.regularTextSprite.text[this.currentOverlayLength]
+	}
+	shiftLetter() {
+		if (this.currentTextLength >  this.currentOverlayLength) {
+			this.overlayTextSprite.text = this.overlayTextSprite.text + this.getNextLetter()
+			this.currentOverlayLength = this.currentOverlayLength + 1
+		}
+	}
+}
 
-textSprite = new PIXI.Text('type these words', redTextStyle)
-overlayTextSprite = new PIXI.Text('', greenTextStyle);
-// TODO: Setup an object oriented system that ties the two sprites together
-// maybe subclass PIXI.Container
 
 function randrange(a,b) {
 	dif =  b - a - 1
@@ -48,27 +68,21 @@ function centerSprite(sprite,stage) {
 	sprite.y = sceneCenter[1] - spriteCenter[1]
 }
 
+textSprite = new TypeWord("Hello World!",baseTextStyleOptions)
+centerSprite(textSprite,app.stage)
+app.stage.addChild(textSprite)
+
+
 window.addEventListener("keydown", function(event) {
 	console.log("()")
 	console.log(event.key)
-	correctLetterIndex = overlayTextSprite.text.length
-	console.log(correctLetterIndex)
-	correctLetter = textSprite.text.charAt(correctLetterIndex)
-	console.log(correctLetter)
-	if (event.key == correctLetter) {
-		overlayTextSprite.text = overlayTextSprite.text + correctLetter
-
+	console.log(textSprite.getNextLetter())
+	if (event.key == textSprite.getNextLetter()) {
+		textSprite.shiftLetter()
 	}
  })
 
 
-console.log(textSprite.width)
-centerSprite(textSprite,app.stage)
-overlayTextSprite.x = textSprite.x
-overlayTextSprite.y = textSprite.y
-console.log(textSprite)
-app.stage.addChild(textSprite)
-app.stage.addChild(overlayTextSprite)
 
 function setup() {
 	app.ticker.add(delta => gameLoop(delta));
