@@ -102,7 +102,22 @@ function angleDiffDegrees(startAngle,stopAngle) {
 }
 
 
-	
+function deltaTweenShift(delta,shift,shiftRate) {
+	//shift rate is how much change cna occur per second
+	maxShift = delta * shiftRate
+	if (Math.abs(shift) > maxShift) {
+		return Math.sign(shift) * maxShift
+	} else {
+		return shift
+	}
+}
+
+
+animationShoulderShift = 180
+animationElbowShift = 0
+animationShoulderShiftRate = 3
+animationElbowShiftRate = 6
+// Rates in degrees per second
 
 app.renderer.plugins.interaction.on('mousedown', function(ev) {
 	mouseDownX = ev.data.global.x;
@@ -116,29 +131,27 @@ app.renderer.plugins.interaction.on('mousedown', function(ev) {
 	pointDistance = distance_between_points(centerX,centerY,mouseDownX,mouseDownY)
 	pointAngleRadians = Math.atan2(centerY-mouseDownY, centerX-mouseDownX)
 	pointAngleDegrees = PIXI.RAD_TO_DEG * pointAngleRadians
-	console.log(pointAngleDegrees)
 
 	baseTargetShoulderAngle = pointAngleDegrees - 90
-	ShoulderShiftAngle = sss_formula(shoulderArmLength,pointDistance,elbowArmLength)
-	elbowShiftAngle = sss_formula(shoulderArmLength,elbowArmLength,pointDistance)
+	shiftTargetShoulderAngle = sss_formula(shoulderArmLength,pointDistance,elbowArmLength)
+	shiftTargetElbowAngle = sss_formula(shoulderArmLength,elbowArmLength,pointDistance)
 
-	leftTargetShoulderAngle = baseTargetShoulderAngle - ShoulderShiftAngle
-	rightTargetShoulderAngle = baseTargetShoulderAngle + ShoulderShiftAngle
+	if (!Number.isNaN(shiftTargetShoulderAngle)) { 
 
-	leftDiff = angleDiffDegrees(shoulderArm.angle, leftTargetShoulderAngle)
-	rightDiff = angleDiffDegrees(shoulderArm.angle, rightTargetShoulderAngle)
+		leftTargetShoulderAngle = baseTargetShoulderAngle - shiftTargetShoulderAngle
+		rightTargetShoulderAngle = baseTargetShoulderAngle + shiftTargetShoulderAngle
 
-	if (Math.abs(leftDiff) <= Math.abs(rightDiff)) {
-		targetShoulderAngle = leftTargetShoulderAngle
-		targetElbowAngle =  180 - elbowShiftAngle 
-	} else {
-		targetShoulderAngle = rightTargetShoulderAngle
-		targetElbowAngle = 180 + elbowShiftAngle
+		leftDiff = angleDiffDegrees(shoulderArm.angle, leftTargetShoulderAngle)
+		rightDiff = angleDiffDegrees(shoulderArm.angle, rightTargetShoulderAngle)
+
+		if (Math.abs(leftDiff) <= Math.abs(rightDiff)) {
+			animationShoulderShift = leftDiff
+			animationElbowShift =  angleDiffDegrees(elbowArm.angle,180 - shiftTargetElbowAngle)
+		} else {
+			animationShoulderShift = rightDiff
+			animationElbowShift =  angleDiffDegrees(elbowArm.angle,180 + shiftTargetElbowAngle)
+		}
 	}
-
-
-	shoulderArm.angle = targetShoulderAngle
-	elbowArm.angle = targetElbowAngle
 })
 
 
@@ -146,10 +159,19 @@ app.renderer.plugins.interaction.on('mousedown', function(ev) {
 
 function setup() {
 	app.ticker.add(delta => gameLoop(delta));
-	app.ticker.maxFPS = 5
+	app.ticker.maxFPS = 30
+	
 }
 
 function gameLoop(delta) {
+	shoulderShift =  deltaTweenShift(delta,animationShoulderShift,animationShoulderShiftRate) 
+	shoulderArm.angle = shoulderArm.angle + shoulderShift
+	animationShoulderShift = animationShoulderShift - shoulderShift
+
+	elbowShift =  deltaTweenShift(delta,animationElbowShift,animationElbowShiftRate) 
+	elbowArm.angle = elbowArm.angle + elbowShift
+	animationElbowShift = animationElbowShift - elbowShift
+
 }
 
 setup()
