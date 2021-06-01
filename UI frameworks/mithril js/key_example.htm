@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+<style>
+.here {
+	border:1px solid blue;
+}
+
+body > div {
+	border: 1px solid black;
+	padding:10px;
+	max-width:22cm;
+	margin:20px auto;
+}
+
+#keys > div {
+	padding:5px;
+	margin:5px;
+	margin-top:15px;
+	border:1px solid black;
+
+
+}
+</style>
+</head>
+<body>
+<div id="keys"></div>
+<script src="https://unpkg.com/mithril/mithril.js">
+</script>
+<script>
+
+data = [];
+data = [ { key:"1" , text:"Apple" },
+	{ key:2, text:"Bannana"},
+	{ key:3, text:"Orange"} 
+];
+
+dataList = function(data) {
+	 return {
+		view: function(vnode) {
+			return data.map(function(row) {
+				return m("div", {key: row.key}, row.text);
+			})
+		}
+    };
+}
+listDisplayComponent = dataList(data)
+m.mount(document.getElementById("keys"),listDisplayComponent)
+</script>
+</body>
+</html>
