@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Replicator</title>
+</head>
+<body>
+<script>
+	function replicateThisDocument() {
+		console.log("BUTTON");
+		downloadLink = document.getElementById("download-link");
+		downloadLink.href = "";
+		var documentHead = "<head>" + document.getElementsByTagName('head')[0].innerHTML + "</head>";
+		var documentBody = "<body>" + document.getElementsByTagName('body')[0].innerHTML + "<body>";
+		documentBody = documentBody + "<div>Loading new page worked</div>";
+		newDocument = "<!DOCTYPE html><html>" + documentHead + documentBody + "</html>";
+		downloadLink.href = "data:text/html, " + newDocument;
+	};
+</script>
+<!-- Note that javascript needs semicolons because firefox strips out the whitespace when cloning is performed -->
+<a href="" id="download-link" download>Download Link</a>
+<div>
+<button onclick="replicateThisDocument()">Quine</button>
+</div>
+</body>
+
+</html>
