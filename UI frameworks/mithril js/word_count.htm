@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+<style>
+.here {
+	border:1px solid blue;
+}
+
+body > div {
+	border: 1px solid black;
+	padding:10px;
+	max-width:22cm;
+	margin:20px auto;
+}
+
+</style>
+</head>
+<body>
+<div id="open"></div>
+<script src="https://unpkg.com/mithril/mithril.js">
+</script>
+<script>
+wordCountTextArea = function(data) {
+	 var wordCount = 0
+	 return {
+		view: function(vnode) {
+			return m("div",
+				m("div",
+					m("span",wordCount.toString()),
+				),
+				m("textarea", {
+					oninput: function() {
+						wordCount = this.value.split(/[ \t]+/).length
+					}
+				}))
+		}
+	}
+}
+m.mount(document.getElementById("open"),wordCountTextArea())
+</script>
+</body>
+</html>
