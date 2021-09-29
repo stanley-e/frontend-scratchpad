@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Title</title>
+  <meta name="description" content="">
+  <meta name="author" content="Stanley Elliott">
+<style>
+body {
+	background-color:#777;
+}
+
+#display-area {
+	background-color:#000;
+	width:640px;
+	height:480px;
+	margin:auto;
+}
+#player-character {
+	width:50px;
+	height:50px;
+	position:absolute;
+
+}
+</style>
+</head>
+<body>
+	<div id="display-area">
+		<img id="player-character" src="box.png" alt="" class="game_token">
+	</div>
+
+<script>
+function getAbsoluteRect(element) {
+		var domRect = element.getBoundingClientRect()
+		var absRect = {}
+		absRect.left = domRect.left + window.scrollX
+		absRect.right = domRect.right + window.scrollX
+		absRect.x = domRect.x + window.scrollX
+
+		absRect.y = domRect.y + window.scrollY
+		absRect.top = domRect.top + window.scrollY
+		absRect.bottom = domRect.bottom + window.scrollY
+
+		absRect.width = domRect.width
+		absRect.height = domRect.height
+		return absRect
+}
+
+var held_keys = {}
+window.onkeydown = function(event_x) {
+	held_keys[event_x.keyCode] = true;
+}
+window.onkeyup = function(event_x) {
+	held_keys[event_x.keyCode] = false;
+
+}
+function clamp(min,value,max) {
+		value = Math.min(value,max)
+		value = Math.max(value,min)
+		return value
+}
+
+class DOMSprite {
+	constructor(spriteElement,displayElement,x,y,width,height) {
+		this.spriteElement = spriteElement
+		this.displayElement = displayElement
+		this.displayArea = getAbsoluteRect(displayElement)
+		this.x = x
+		this.y = y 
+		this.width = width
+		this.height = height
+
+
+	}
+	update_position() {
+		this.x = clamp(0,this.x,this.displayArea.width - this.width)
+		this.y = clamp(0,this.y,this.displayArea.height - this.height)
+		this.spriteElement.style.left = String(this.displayArea.x + this.x) + "px"
+		this.spriteElement.style.top = String(this.displayArea.y + this.y) + "px"
+	}
+	setPosition(x,y) {
+		this.x = x;
+		this.y = y;
+		this.update()
+	}
+	moveX(x) {
+		this.x = this.x + x
+		this.update_position()
+	}
+	moveY(y) {
+		this.y = this.y + y
+		this.update_position()
+	}
+}
+
+displayAreaElement = document.getElementById("display-area")
+playerElement = document.getElementById("player-character");
+playerCharacter = new DOMSprite(playerElement,displayAreaElement,0,0,50,50);
+
+
+RIGHT = 68 // The D key
+DOWN =  83 // The S key
+
+
+window.setInterval(function() {
+		console.log(held_keys)
+		if (held_keys[RIGHT]) {
+			playerCharacter.moveX(10)
+		}
+		else if (playerCharacter.x > 0) {
+			playerCharacter.moveX(-2)
+		}
+		if (held_keys[DOWN]) {
+			playerCharacter.moveY(10)
+			} else  if (playerCharacter.y > 0
+		) {
+			playerCharacter.moveY(-2)
+		}
+	},50);
+
+
+</script>
+</body>
+</html>
